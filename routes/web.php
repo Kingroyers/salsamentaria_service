@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Rutas públicas — Sin login
@@ -36,9 +38,45 @@ Route::middleware(['auth', 'role:cajero'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
+    
+    Route:: get('/ventas', function(){
+        return view('admin.ventas.index');
+    })->name('ventas');
+    
+    Route:: get('/reportes', function(){
+        return view('admin.reportes.index');
+    })->name('reportes');
+
+    Route:: get('/productos', function(){
+        return view('admin.productos.index');
+    })->name('productos');
+
+    Route:: get('/usuarios', function(){
+        return view('admin.usuarios.index');
+    })->name('usuarios');
+
+    Route:: get('/configuracion', function(){
+        return view('admin.configuracion.index');
+    })->name('configuracion');
+
+    Route:: get('/facturas', function(){
+        return view('admin.facturas.index');
+    })->name('facturas');
+
+    Route:: get('/categorias', function(){
+        return view('admin.categorias.index');
+    })->name('categorias');
+
+    Route:: get('/stock_bajos', function(){
+        return view('admin.stock_bajos.index');
+    })->name('stock_bajos');
+
+
+
 
     // Aquí irán los módulos de admin más adelante:
     // Route::resource('productos', ProductoController::class);
     // Route::resource('usuarios', UsuarioController::class);
     // Route::get('reportes', [ReporteController::class, 'index'])->name('reportes');
 });
+

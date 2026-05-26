@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Salsamentaria — Documentación Técnica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e8e8;
+    --muted: #888;
+    --accent: #00d084;
+    --accent2: #0099ff;
+    --accent3: #ff6b35;
+    --warn: #f5c842;
+    --tag-bg: rgba(0,208,132,0.1);
+    --tag-border: rgba(0,208,132,0.3);
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  /* Layout */
+  .shell { display: flex; min-height: 100vh; }
+
+  nav {
+    width: 240px;
+    min-width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: var(--mono);
+    margin-bottom: 4px;
+  }
+
+  .nav-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .nav-version {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .nav-section {
+    padding: 12px 20px 4px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    font-size: 13px;
+    color: #aaa;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  nav a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,208,132,0.06); }
+
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--muted); flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  nav a:hover .dot { background: var(--text); }
+  nav a.active .dot { background: var(--accent); }
+
+  main {
+    flex: 1;
+    min-width: 0;
+    padding: 48px 60px 80px;
+    max-width: 860px;
+  }
+
+  /* Sections */
+  section { margin-bottom: 64px; scroll-margin-top: 32px; }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin: 20px 0 8px;
+    font-family: var(--mono);
+    letter-spacing: 0.02em;
+  }
+
+  p { color: #ccc; margin-bottom: 12px; font-weight: 300; }
+
+  /* Hero */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 36px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+
+  .hero-stat {
+    padding: 0 24px;
+    border-right: 1px solid var(--border);
+  }
+  .hero-stat:first-child { padding-left: 0; }
+  .hero-stat:last-child { border-right: none; }
+
+  .hero-num {
+    font-size: 28px;
+    font-weight: 600;
+    font-family: var(--mono);
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: var(--mono);
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    color: var(--accent);
+  }
+
+  .tag.blue { background: rgba(0,153,255,0.1); border-color: rgba(0,153,255,0.3); color: var(--accent2); }
+  .tag.orange { background: rgba(255,107,53,0.1); border-color: rgba(255,107,53,0.3); color: var(--accent3); }
+  .tag.yellow { background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.3); color: var(--warn); }
+
+  /* Stack grid */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .stack-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .stack-card:hover { border-color: var(--border2); }
+
+  .stack-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .stack-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .stack-role {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* Architecture diagram */
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 20px 0;
+    font-family: var(--mono);
+  }
+
+  .arch-tier {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    margin-bottom: 0;
+  }
+
+  .arch-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+  }
+
+  .arch-arrow-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .arch-box {
+    flex: 1;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s;
+    cursor: default;
+  }
+  .arch-box:hover { border-color: var(--accent); background: rgba(0,208,132,0.04); }
+
+  .arch-box-title { font-weight: 500; font-size: 12px; }
+  .arch-box-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  .arch-box.green { border-color: rgba(0,208,132,0.3); }
+  .arch-box.blue { border-color: rgba(0,153,255,0.3); }
+  .arch-box.orange { border-color: rgba(255,107,53,0.3); }
+
+  /* Role cards */
+  .role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .role-badge {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .role-badge.admin { background: rgba(255,107,53,0.12); color: var(--accent3); border: 1px solid rgba(255,107,53,0.25); }
+  .role-badge.cajero { background: rgba(0,153,255,0.12); color: var(--accent2); border: 1px solid rgba(0,153,255,0.25); }
+
+  .perm-list { list-style: none; }
+  .perm-list li {
+    font-size: 13px;
+    color: #bbb;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .perm-list li:last-child { border-bottom: none; }
+  .perm-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .perm-dot.blue { background: var(--accent2); }
+
+  /* Flow steps */
+  .flow-steps {
+    position: relative;
+    padding-left: 28px;
+    margin: 16px 0;
+  }
+  .flow-steps::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border2);
+  }
+
+  .flow-step {
+    position: relative;
+    padding: 10px 0 10px 20px;
+  }
+  .flow-step::before {
+    content: '';
+    position: absolute;
+    left: -21px;
+    top: 15px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border2);
+    transition: border-color 0.2s;
+  }
+  .flow-step:hover::before { border-color: var(--accent); }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .step-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .step-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* DB schema */
+  .schema-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table-header {
+    background: var(--surface2);
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-fields { padding: 6px 0; }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-family: var(--mono);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+  .field-row:last-child { border-bottom: none; }
+  .field-row:hover { background: rgba(255,255,255,0.03); }
+
+  .field-name { color: var(--text); flex: 1; }
+  .field-type { color: var(--muted); font-size: 11px; }
+  .field-pk { font-size: 9px; background: rgba(245,200,66,0.15); color: var(--warn); border: 1px solid rgba(245,200,66,0.3); border-radius: 3px; padding: 1px 4px; }
+  .field-fk { font-size: 9px; background: rgba(0,153,255,0.1); color: var(--accent2); border: 1px solid rgba(0,153,255,0.25); border-radius: 3px; padding: 1px 4px; }
+  .field-nn { font-size: 9px; background: rgba(0,208,132,0.1); color: var(--accent); border: 1px solid rgba(0,208,132,0.25); border-radius: 3px; padding: 1px 4px; }
+
+  /* Requirements table */
+  .req-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 16px 0;
+  }
+
+  .req-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border2);
+    font-weight: 400;
+  }
+
+  .req-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: #ccc;
+    font-weight: 300;
+    vertical-align: top;
+  }
+
+  .req-table tr:last-child td { border-bottom: none; }
+  .req-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .req-table td:first-child { font-family: var(--mono); font-size: 12px; color: var(--text); }
+
+  /* Feature grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .feature-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    transition: border-color 0.2s;
+    cursor: default;
+  }
+  .feature-item:hover { border-color: var(--border2); }
+
+  .feature-title { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .feature-desc { font-size: 11px; color: var(--muted); }
+
+  /* Roadmap */
+  .roadmap {
+    margin: 16px 0;
+  }
+
+  .roadmap-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .roadmap-item:last-child { border-bottom: none; }
+
+  .rm-phase {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .rm-phase.v1 { background: rgba(0,208,132,0.1); color: var(--accent); border: 1px solid rgba(0,208,132,0.25); }
+  .rm-phase.v2 { background: rgba(0,153,255,0.1); color: var(--accent2); border: 1px solid rgba(0,153,255,0.25); }
+  .rm-phase.v3 { background: rgba(255,107,53,0.1); color: var(--accent3); border: 1px solid rgba(255,107,53,0.25); }
+
+  .rm-content { flex: 1; }
+  .rm-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .rm-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Security */
+  .security-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .sec-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .sec-icon {
+    width: 24px;
+    height: 24px;
+    background: rgba(0,208,132,0.1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .sec-title { font-size: 12px; font-weight: 500; color: var(--text); }
+  .sec-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Code block */
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #ccc;
+    overflow-x: auto;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+
+  .kw { color: var(--accent2); }
+  .str { color: #a8d8a8; }
+  .cmt { color: var(--muted); font-style: italic; }
+  .fn { color: var(--accent); }
+
+  /* Active nav tracking */
+  section { scroll-margin-top: 24px; }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 16px; }
+
+  /* Scrollbar */
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-track { background: transparent; }
+  nav::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav>
+    <div class="nav-header">
+      <div class="nav-logo">Sistema POS</div>
+      <div class="nav-title">Salsamentaria</div>
+      <div class="nav-version">v1.0 · Documentación técnica</div>
+    </div>
+
+    <div class="nav-section">Introducción</div>
+    <a href="#overview" class="active"><span class="dot"></span>Descripción general</a>
+    <a href="#stack"><span class="dot"></span>Stack tecnológico</a>
+
+    <div class="nav-section">Arquitectura</div>
+    <a href="#architecture"><span class="dot"></span>Capas del sistema</a>
+    <a href="#roles"><span class="dot"></span>Roles y permisos</a>
+
+    <div class="nav-section">Dominio</div>
+    <a href="#modules"><span class="dot"></span>Módulos funcionales</a>
+    <a href="#flow"><span class="dot"></span>Flujo de una venta</a>
+    <a href="#database"><span class="dot"></span>Modelo de datos</a>
+
+    <div class="nav-section">Calidad</div>
+    <a href="#security"><span class="dot"></span>Seguridad</a>
+    <a href="#requirements"><span class="dot"></span>Requisitos del sistema</a>
+    <a href="#roadmap"><span class="dot"></span>Roadmap</a>
+  </nav>
+
+  <main>
+
+    <section id="overview">
+      <h1>Sistema POS — Salsamentaria</h1>
+      <p class="subtitle">Sistema de punto de venta web interno para gestión de ventas, pagos e inventario en tiempo real.</p>
+
+      <div class="hero">
+        <div class="hero-stat">
+          <div class="hero-num">4</div>
+          <div class="hero-label">Módulos principales</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-num">2</div>
+          <div class="hero-label">Roles de usuario</div>
+        </div>
+        <div class="hero-stat" style="border-right:none">
+          <div class="hero-num">9</div>
+          <div class="hero-label">Tablas en BD</div>
+        </div>
+      </div>
+
+      <p>El sistema permite al cajero registrar ventas en tiempo real desde la PC del local, procesar pagos (efectivo, transferencia, tarjeta), generar facturas/recibos y controlar el inventario automáticamente tras cada venta.</p>
+      <p>Es un sistema de uso interno — no está expuesto al público. Acceso mediante login con roles diferenciados.</p>
+
+      <div class="badge-row">
+        <span class="tag">Laravel 10</span>
+        <span class="tag blue">MySQL 8</span>
+        <span class="tag blue">Blade + Bootstrap 5</span>
+        <span class="tag orange">PHP 8.2+</span>
+        <span class="tag yellow">Uso local / LAN</span>
+      </div>
+    </section>
+
+    <section id="stack">
+      <h2>Stack tecnológico</h2>
+      <p>Arquitectura monolítica con Laravel MVC. Elección deliberada para un sistema de un único local: menor complejidad operacional, sin necesidad de API separada ni infraestructura distribuida.</p>
+
+      <div class="stack-grid">
+        <div class="stack-card">
+          <div class="stack-icon">⚙️</div>
+          <div class="stack-name">Laravel 10</div>
+          <div class="stack-role">Backend · MVC framework</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">🗄️</div>
+          <div class="stack-name">MySQL 8</div>
+          <div class="stack-role">Base de datos relacional</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">🎨</div>
+          <div class="stack-name">Blade + Bootstrap 5</div>
+          <div class="stack-role">Vistas del servidor</div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-icon">🔒</div>
+          <div class="stack-name">Laravel Sanctum</div>
+          <div class="stack-role">Autenticación y sesiones</div>
+        </div>
+      </div>
+
+      <h3>Justificación de la arquitectura monolítica</h3>
+      <p>Para un sistema de tienda local con 1–2 usuarios concurrentes, un monolito Laravel es la opción más pragmática. Evita la complejidad de mantener un backend API separado + frontend SPA cuando Blade renderiza las vistas desde el servidor con excelente rendimiento.</p>
+      <p>Si en el futuro se requiere una app móvil o múltiples sucursales, se puede evolucionar hacia una arquitectura API-first extrayendo los controladores en una capa de servicios separada.</p>
+    </section>
+
+    <section id="architecture">
+      <h2>Arquitectura del sistema</h2>
+      <p>El sistema sigue el patrón MVC de Laravel con una capa de servicios adicional para aislar la lógica de negocio de los controladores.</p>
+
+      <div class="arch-diagram">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:16px;letter-spacing:0.06em;text-transform:uppercase;">Capas del sistema</div>
+
+        <div class="arch-tier">
+          <div class="arch-box green">
+            <div class="arch-box-title">Presentación</div>
+            <div class="arch-box-sub">Blade Views · Bootstrap 5 · Alpine.js</div>
+          </div>
+        </div>
+
+        <div class="arch-arrow">
+          <div class="arch-arrow-line">
+            <div style="width:1px;height:10px;background:var(--border2)"></div>
+            <div style="font-size:10px;color:var(--muted)">HTTP request</div>
+            <div style="width:1px;height:10px;background:var(--border2)"></div>
+          </div>
+        </div>
+
+        <div class="arch-tier">
+          <div class="arch-box blue" style="margin-right:8px">
+            <div class="arch-box-title">Controllers</div>
+            <div class="arch-box-sub">Validación, autorización, respuesta HTTP</div>
+          </div>
+          <div class="arch-box blue">
+            <div class="arch-box-title">Routes</div>
+            <div class="arch-box-sub">web.php · Middleware de auth y roles</div>
+          </div>
+        </div>
+
+        <div class="arch-arrow">
+          <div class="arch-arrow-line">
+            <div style="width:1px;height:10px;background:var(--border2)"></div>
+            <div style="font-size:10px;color:var(--muted)">Service call</div>
+            <div style="width:1px;height:10px;background:var(--border2)"></div>
+          </div>
+        </div>
+
+        <div class="arch-tier">
+          <div class="arch-box orange" style="margin-right:8px">
+            <div class="arch-box-title">Service Layer</div>
+            <div class="arch-box-sub">VentaService · InventarioService · FacturaService</div>
+          </div>
+          <div class="arch-box orange">
+            <div class="arch-box-title">Events / Jobs</div>
+            <div class="arch-box-sub">StockActualizado · FacturaGenerada</div>
+          </div>
+        </div>
+
+        <div class="arch-arrow">
+          <div class="arch-arrow-line">
+            <div style="width:1px;height:10px;background:var(--border2)"></div>
+            <div style="font-size:10px;color:var(--muted)">Eloquent ORM</div>
+            <div style="width:1px;height:10px;background:var(--border2)"></div>
+          </div>
+        </div>
+
+        <div class="arch-tier">
+          <div class="arch-box" style="margin-right:8px">
+            <div class="arch-box-title">Models / Eloquent</div>
+            <div class="arch-box-sub">Venta · Producto · Usuario · Factura</div>
+          </div>
+          <div class="arch-box">
+            <div class="arch-box-title">MySQL 8</div>
+            <div class="arch-box-sub">Transacciones ACID · Índices optimizados</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Estructura de directorios</h3>
+      <pre><span class="cmt">// app/</span>
+├── <span class="fn">Http/</span>
+│   ├── Controllers/
+│   │   ├── <span class="kw">VentaController.php</span>       <span class="cmt">// POS principal</span>
+│   │   ├── <span class="kw">ProductoController.php</span>    <span class="cmt">// CRUD productos</span>
+│   │   ├── <span class="kw">ReporteController.php</span>     <span class="cmt">// Dashboard admin</span>
+│   │   └── <span class="kw">UsuarioController.php</span>     <span class="cmt">// Gestión usuarios</span>
+│   └── Middleware/
+│       └── <span class="kw">CheckRole.php</span>             <span class="cmt">// Guard por rol</span>
+├── <span class="fn">Services/</span>
+│   ├── <span class="kw">VentaService.php</span>              <span class="cmt">// Lógica de venta + transacción</span>
+│   ├── <span class="kw">InventarioService.php</span>         <span class="cmt">// Descuento de stock</span>
+│   └── <span class="kw">FacturaService.php</span>            <span class="cmt">// Generación de factura</span>
+├── <span class="fn">Models/</span>
+│   ├── <span class="kw">Venta.php</span> · <span class="kw">DetalleVenta.php</span>
+│   ├── <span class="kw">Producto.php</span> · <span class="kw">Categoria.php</span>
+│   └── <span class="kw">Usuario.php</span> · <span class="kw">Factura.php</span>
+└── <span class="fn">Events/</span>
+    └── <span class="kw">VentaCompletada.php</span>           <span class="cmt">// Dispara descuento + factura</span></pre>
+    </section>
+
+    <section id="roles">
+      <h2>Roles y permisos</h2>
+      <p>Sistema de dos roles manejados con middleware de Laravel. Los roles se almacenan en la tabla <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">usuarios.rol</code> con valores <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">admin</code> / <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">cajero</code>.</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <span class="role-badge admin">ADMINISTRADOR</span>
+          <ul class="perm-list">
+            <li><span class="perm-dot"></span>Gestión de productos y categorías</li>
+            <li><span class="perm-dot"></span>Gestión de usuarios y roles</li>
+            <li><span class="perm-dot"></span>Ver reportes de ventas e inventario</li>
+            <li><span class="perm-dot"></span>Exportar reportes a PDF / Excel</li>
+            <li><span class="perm-dot"></span>Configurar parámetros del sistema</li>
+            <li><span class="perm-dot"></span>Ver historial de facturas</li>
+            <li><span class="perm-dot"></span>Anular ventas (con justificación)</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <span class="role-badge cajero">CAJERO</span>
+          <ul class="perm-list">
+            <li><span class="perm-dot blue"></span>Registrar ventas en el POS</li>
+            <li><span class="perm-dot blue"></span>Buscar productos por nombre / código</li>
+            <li><span class="perm-dot blue"></span>Procesar pagos (efectivo, transferencia)</li>
+            <li><span class="perm-dot blue"></span>Generar e imprimir facturas</li>
+            <li><span class="perm-dot blue"></span>Ver stock disponible de productos</li>
+            <li><span class="perm-dot blue" style="background:rgba(136,136,136,0.4)"></span><span style="color:var(--muted)">Sin acceso a reportes ni configuración</span></li>
+            <li><span class="perm-dot blue" style="background:rgba(136,136,136,0.4)"></span><span style="color:var(--muted)">Sin acceso a gestión de usuarios</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="modules">
+      <h2>Módulos funcionales</h2>
+
+      <h3>Módulo 1 — Punto de Venta (POS)</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-title">Búsqueda rápida</div>
+          <div class="feature-desc">Por nombre, código de barras o referencia interna</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Carrito en tiempo real</div>
+          <div class="feature-desc">Total actualizado con cada producto agregado</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Métodos de pago</div>
+          <div class="feature-desc">Efectivo, transferencia, tarjeta débito/crédito</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Cálculo de cambio</div>
+          <div class="feature-desc">Automático al ingresar monto recibido en efectivo</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Validación de stock</div>
+          <div class="feature-desc">Bloquea venta si no hay inventario disponible</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Descuentos</div>
+          <div class="feature-desc">Por ítem o sobre el total (autorización admin)</div>
+        </div>
+      </div>
+
+      <h3>Módulo 2 — Facturación</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-title">Numeración automática</div>
+          <div class="feature-desc">Consecutivo único por año/mes configurable</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Datos de la factura</div>
+          <div class="feature-desc">Fecha, cajero, productos, subtotales, total</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Impresión / PDF</div>
+          <div class="feature-desc">Formato térmico 80mm o PDF estándar</div>
+        </div>
+      </div>
+
+      <h3>Módulo 3 — Inventario</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-title">Descuento automático</div>
+          <div class="feature-desc">Al completar la venta, dentro de la misma transacción DB</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Alertas de stock bajo</div>
+          <div class="feature-desc">Notificación cuando el stock baja del mínimo configurado</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Ajuste manual</div>
+          <div class="feature-desc">Entrada de mercancía y correcciones (solo admin)</div>
+        </div>
+      </div>
+
+      <h3>Módulo 4 — Reportes (Admin)</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-title">Ventas del día</div>
+          <div class="feature-desc">Total, cantidad de transacciones, método de pago</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Productos más vendidos</div>
+          <div class="feature-desc">Ranking por periodo configurable</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title">Estado de inventario</div>
+          <div class="feature-desc">Stock actual, productos bajo mínimo</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow">
+      <h2>Flujo de una venta</h2>
+      <p>Descripción del proceso completo desde que el cajero abre el POS hasta que se genera la factura. El paso más crítico es el paso 7: la venta y el descuento de inventario ocurren dentro de la misma transacción de base de datos.</p>
+
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">01</div>
+          <div class="step-title">Cajero abre el POS</div>
+          <div class="step-desc">Accede a <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">/venta/nueva</code>. Se crea un carrito vacío en sesión.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">02</div>
+          <div class="step-title">Búsqueda y selección de productos</div>
+          <div class="step-desc">Búsqueda AJAX por nombre o código. El resultado muestra nombre, precio y stock disponible.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">03</div>
+          <div class="step-title">Composición del carrito</div>
+          <div class="step-desc">El cajero agrega ítems y cantidades. El total se recalcula en tiempo real. Se valida que la cantidad no supere el stock.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">04</div>
+          <div class="step-title">Selección del método de pago</div>
+          <div class="step-desc">Efectivo: se ingresa el monto recibido y se muestra el cambio. Transferencia/tarjeta: se registra el número de referencia.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">05</div>
+          <div class="step-title">Confirmación</div>
+          <div class="step-desc">El cajero hace clic en "Cobrar". Se ejecuta la petición POST a <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">/venta/procesar</code>.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">06</div>
+          <div class="step-title">Validación en servidor</div>
+          <div class="step-desc"><code style="font-family:var(--mono);font-size:11px;color:var(--accent)">VentaController</code> valida el request y llama a <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">VentaService::procesar()</code>.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">07 ⚡</div>
+          <div class="step-title">Transacción atómica en base de datos</div>
+          <div class="step-desc">Dentro de <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">DB::transaction()</code>: crea registro en <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">ventas</code>, inserta <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">detalle_venta</code> por cada ítem, descuenta stock en <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">productos.stock</code>. Si algo falla, hace rollback completo.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">08</div>
+          <div class="step-title">Evento VentaCompletada</div>
+          <div class="step-desc">Se dispara el evento. El listener <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">GenerarFactura</code> crea el registro en <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">facturas</code> con número consecutivo.</div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">09</div>
+          <div class="step-title">Respuesta y factura</div>
+          <div class="step-desc">El cajero es redirigido a la vista de la factura generada. Puede imprimirla o descargarla como PDF.</div>
+        </div>
+      </div>
+
+      <h3>Transacción atómica — implementación</h3>
+      <pre><span class="cmt">// VentaService.php</span>
+<span class="kw">public function</span> <span class="fn">procesar</span>(array $carrito, array $pago): Venta
+{
+    <span class="kw">return</span> DB::<span class="fn">transaction</span>(<span class="kw">function</span>() <span class="kw">use</span> ($carrito, $pago) {
+        $venta = Venta::<span class="fn">create</span>([
+            <span class="str">'usuario_id'</span>     => <span class="fn">auth</span>()-><span class="fn">id</span>(),
+            <span class="str">'total'</span>          => $carrito[<span class="str">'total'</span>],
+            <span class="str">'metodo_pago'</span>    => $pago[<span class="str">'metodo'</span>],
+            <span class="str">'estado'</span>         => <span class="str">'completada'</span>,
+        ]);
+
+        <span class="kw">foreach</span> ($carrito[<span class="str">'items'</span>] <span class="kw">as</span> $item) {
+            $venta->detalles()-><span class="fn">create</span>($item);
+
+            <span class="cmt">// Descuento con lock para concurrencia</span>
+            Producto::<span class="fn">lockForUpdate</span>()-><span class="fn">find</span>($item[<span class="str">'producto_id'</span>])
+                -><span class="fn">decrement</span>(<span class="str">'stock'</span>, $item[<span class="str">'cantidad'</span>]);
+        }
+
+        <span class="fn">event</span>(<span class="kw">new</span> VentaCompletada($venta));
+        <span class="kw">return</span> $venta;
+    });
+}</pre>
+    </section>
+
+    <section id="database">
+      <h2>Modelo de datos</h2>
+      <p>9 tablas. Las tablas principales son <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">ventas</code> y <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">detalle_venta</code>. Se usa soft delete en productos y ventas para mantener historial.</p>
+
+      <div class="schema-grid">
+
+        <div class="table-card">
+          <div class="table-header">productos <span class="tag yellow">stock</span></div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">id</span><span class="field-pk">PK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">categoria_id</span><span class="field-fk">FK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">codigo</span><span class="field-nn">NN</span><span class="field-type">varchar(50)</span></div>
+            <div class="field-row"><span class="field-name">nombre</span><span class="field-nn">NN</span><span class="field-type">varchar(100)</span></div>
+            <div class="field-row"><span class="field-name">precio_venta</span><span class="field-nn">NN</span><span class="field-type">decimal(10,2)</span></div>
+            <div class="field-row"><span class="field-name">precio_costo</span><span class="field-type">decimal(10,2)</span></div>
+            <div class="field-row"><span class="field-name">stock</span><span class="field-nn">NN</span><span class="field-type">int · default 0</span></div>
+            <div class="field-row"><span class="field-name">stock_minimo</span><span class="field-type">int · default 5</span></div>
+            <div class="field-row"><span class="field-name">activo</span><span class="field-type">tinyint · default 1</span></div>
+            <div class="field-row"><span class="field-name">deleted_at</span><span class="field-type">timestamp · null</span></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">ventas <span class="tag blue">core</span></div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">id</span><span class="field-pk">PK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">usuario_id</span><span class="field-fk">FK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">numero_venta</span><span class="field-nn">NN</span><span class="field-type">varchar(20) · unique</span></div>
+            <div class="field-row"><span class="field-name">subtotal</span><span class="field-nn">NN</span><span class="field-type">decimal(10,2)</span></div>
+            <div class="field-row"><span class="field-name">descuento</span><span class="field-type">decimal(10,2) · default 0</span></div>
+            <div class="field-row"><span class="field-name">total</span><span class="field-nn">NN</span><span class="field-type">decimal(10,2)</span></div>
+            <div class="field-row"><span class="field-name">metodo_pago</span><span class="field-nn">NN</span><span class="field-type">enum</span></div>
+            <div class="field-row"><span class="field-name">estado</span><span class="field-type">enum · default completada</span></div>
+            <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamp</span></div>
+            <div class="field-row"><span class="field-name">deleted_at</span><span class="field-type">timestamp · null</span></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">detalle_venta <span class="tag">pivot</span></div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">id</span><span class="field-pk">PK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">venta_id</span><span class="field-fk">FK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">producto_id</span><span class="field-fk">FK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">nombre_producto</span><span class="field-nn">NN</span><span class="field-type">varchar(100)</span></div>
+            <div class="field-row"><span class="field-name">precio_unitario</span><span class="field-nn">NN</span><span class="field-type">decimal(10,2)</span></div>
+            <div class="field-row"><span class="field-name">cantidad</span><span class="field-nn">NN</span><span class="field-type">int</span></div>
+            <div class="field-row"><span class="field-name">descuento_item</span><span class="field-type">decimal(10,2) · default 0</span></div>
+            <div class="field-row"><span class="field-name">subtotal</span><span class="field-nn">NN</span><span class="field-type">decimal(10,2)</span></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">usuarios <span class="tag orange">auth</span></div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">id</span><span class="field-pk">PK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">nombre</span><span class="field-nn">NN</span><span class="field-type">varchar(100)</span></div>
+            <div class="field-row"><span class="field-name">email</span><span class="field-nn">NN</span><span class="field-type">varchar(100) · unique</span></div>
+            <div class="field-row"><span class="field-name">password</span><span class="field-nn">NN</span><span class="field-type">varchar(255) · bcrypt</span></div>
+            <div class="field-row"><span class="field-name">rol</span><span class="field-nn">NN</span><span class="field-type">enum(admin, cajero)</span></div>
+            <div class="field-row"><span class="field-name">activo</span><span class="field-type">tinyint · default 1</span></div>
+            <div class="field-row"><span class="field-name">ultimo_acceso</span><span class="field-type">timestamp · null</span></div>
+            <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamp</span></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">facturas</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">id</span><span class="field-pk">PK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">venta_id</span><span class="field-fk">FK</span><span class="field-type">bigint · unique</span></div>
+            <div class="field-row"><span class="field-name">numero_factura</span><span class="field-nn">NN</span><span class="field-type">varchar(20) · unique</span></div>
+            <div class="field-row"><span class="field-name">pdf_path</span><span class="field-type">varchar(255) · null</span></div>
+            <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamp</span></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">categorias</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">id</span><span class="field-pk">PK</span><span class="field-type">bigint</span></div>
+            <div class="field-row"><span class="field-name">nombre</span><span class="field-nn">NN</span><span class="field-type">varchar(80)</span></div>
+            <div class="field-row"><span class="field-name">activo</span><span class="field-type">tinyint · default 1</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <h3>Índices importantes</h3>
+      <pre><span class="cmt">-- Búsqueda rápida de productos en el POS</span>
+<span class="kw">CREATE INDEX</span> idx_productos_nombre <span class="kw">ON</span> productos (nombre);
+<span class="kw">CREATE INDEX</span> idx_productos_codigo <span class="kw">ON</span> productos (codigo);
+
+<span class="cmt">-- Reportes de ventas por fecha</span>
+<span class="kw">CREATE INDEX</span> idx_ventas_fecha <span class="kw">ON</span> ventas (created_at);
+<span class="kw">CREATE INDEX</span> idx_ventas_usuario <span class="kw">ON</span> ventas (usuario_id, created_at);</pre>
+    </section>
+
+    <section id="security">
+      <h2>Seguridad</h2>
+
+      <div class="security-grid">
+        <div class="sec-item">
+          <div class="sec-icon">🔐</div>
+          <div>
+            <div class="sec-title">Autenticación</div>
+            <div class="sec-desc">Laravel Sanctum con sesiones. Contraseñas con bcrypt (cost 12). Cierre de sesión automático tras 2h inactivo.</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-icon">👤</div>
+          <div>
+            <div class="sec-title">Autorización por rol</div>
+            <div class="sec-desc">Middleware <code style="font-family:var(--mono);font-size:11px">CheckRole</code> en rutas admin. Gates en acciones sensibles (anular ventas, ajustar stock).</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-icon">🛡️</div>
+          <div>
+            <div class="sec-title">Validación de datos</div>
+            <div class="sec-desc">Form Requests de Laravel para todas las entradas. Tipado estricto en migraciones.</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-icon">🔒</div>
+          <div>
+            <div class="sec-title">CSRF Protection</div>
+            <div class="sec-desc">Token CSRF de Laravel en todos los formularios. Protección por defecto en rutas web.</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-icon">📦</div>
+          <div>
+            <div class="sec-title">Validación de inventario</div>
+            <div class="sec-desc">Bloqueo a nivel DB (<code style="font-family:var(--mono);font-size:11px">lockForUpdate</code>) en descuento de stock. Evita condición de carrera en ventas simultáneas.</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-icon">📋</div>
+          <div>
+            <div class="sec-title">Auditoría</div>
+            <div class="sec-desc">Soft deletes en ventas y productos. Registro de usuario en cada venta. Historial de ajustes de inventario.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="requirements">
+      <h2>Requisitos del sistema</h2>
+
+      <table class="req-table">
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Mínimo</th>
+            <th>Recomendado</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PHP</td>
+            <td>8.1</td>
+            <td>8.2+</td>
+            <td>Con extensiones: pdo_mysql, mbstring, openssl, gd</td>
+          </tr>
+          <tr>
+            <td>Laravel</td>
+            <td>10.x</td>
+            <td>10.x</td>
+            <td>Composer 2.x para instalación</td>
+          </tr>
+          <tr>
+            <td>MySQL</td>
+            <td>8.0</td>
+            <td>8.0+</td>
+            <td>InnoDB engine requerido para transacciones</td>
+          </tr>
+          <tr>
+            <td>Servidor web</td>
+            <td>Apache 2.4</td>
+            <td>Nginx 1.18+</td>
+            <td>mod_rewrite en Apache. Configuración .htaccess incluida</td>
+          </tr>
+          <tr>
+            <td>RAM (servidor)</td>
+            <td>512 MB</td>
+            <td>1 GB+</td>
+            <td>Suficiente para un local con uso local/LAN</td>
+          </tr>
+          <tr>
+            <td>Navegador</td>
+            <td>Chrome 90+</td>
+            <td>Chrome / Edge actuales</td>
+            <td>JavaScript habilitado. No requiere extensiones</td>
+          </tr>
+          <tr>
+            <td>Red</td>
+            <td>LAN 100 Mbps</td>
+            <td>LAN Gigabit</td>
+            <td>No requiere internet. Funciona en red local</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Instalación rápida</h3>
+      <pre><span class="cmt"># Clonar e instalar dependencias</span>
+git clone https://github.com/tu-repo/pos-salsamentaria.git
+cd pos-salsamentaria
+composer install --no-dev --optimize-autoloader
+
+<span class="cmt"># Configurar entorno</span>
+cp .env.example .env
+php artisan key:generate
+
+<span class="cmt"># Base de datos</span>
+php artisan migrate --seed     <span class="cmt"># Crea tablas + usuario admin inicial</span>
+
+<span class="cmt"># Permisos</span>
+chmod -R 775 storage bootstrap/cache
+
+<span class="cmt"># Optimizar para producción</span>
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache</pre>
+    </section>
+
+    <section id="roadmap">
+      <h2>Roadmap</h2>
+      <p>Funcionalidades organizadas por prioridad e impacto operacional.</p>
+
+      <div class="roadmap">
+        <div class="roadmap-item">
+          <span class="rm-phase v1">v1.0</span>
+          <div class="rm-content">
+            <div class="rm-title">Núcleo del POS</div>
+            <div class="rm-desc">Venta, pago efectivo, factura básica, inventario automático, roles admin/cajero.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="rm-phase v1">v1.1</span>
+          <div class="rm-content">
+            <div class="rm-title">Métodos de pago adicionales</div>
+            <div class="rm-desc">Transferencia bancaria y tarjeta débito/crédito con registro de número de referencia.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="rm-phase v1">v1.2</span>
+          <div class="rm-content">
+            <div class="rm-title">Reportes básicos</div>
+            <div class="rm-desc">Ventas del día, semana y mes. Productos más vendidos. Exportación a PDF.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="rm-phase v2">v2.0</span>
+          <div class="rm-content">
+            <div class="rm-title">Lector de código de barras</div>
+            <div class="rm-desc">Integración con lector USB/HID. Búsqueda y agrega al carrito al escanear.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="rm-phase v2">v2.1</span>
+          <div class="rm-content">
+            <div class="rm-title">Impresora térmica 80mm</div>
+            <div class="rm-desc">Impresión directa de facturas vía ESC/POS. Compatible con impresoras Epson TM series.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="rm-phase v2">v2.2</span>
+          <div class="rm-content">
+            <div class="rm-title">Cierre de caja</div>
+            <div class="rm-desc">Cierre diario con conteo de efectivo, conciliación y reporte de diferencias.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="rm-phase v3">v3.0</span>
+          <div class="rm-content">
+            <div class="rm-title">Facturación electrónica DIAN</div>
+            <div class="rm-desc">Integración con proveedor autorizado DIAN para factura electrónica Colombia.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="rm-phase v3">v3.1</span>
+          <div class="rm-content">
+            <div class="rm-title">App móvil / Multi-sucursal</div>
+            <div class="rm-desc">API REST + app móvil para consulta de inventario y ventas desde celular.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  function updateActive() {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+
+  navLinks.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
